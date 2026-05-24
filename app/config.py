@@ -78,11 +78,13 @@ DEFAULT_SERVICES = [
     ),
     Service(
         key="vip_service",
-        title="VIP Europe Service",
+        title="Готовий акаунт Vinted",
         price="15 EUR передплата",
         description=(
-            "VIP-заявка на сервіс продажів у Європі: анкета, черга, manager review "
-            "та подальша видача аккаунта. Full payment після review: 115 EUR."
+            "Послуга для старту продажів на Vinted у Європі. Ви залишаєте передплату "
+            "15 EUR, заповнюєте анкету, після чого заявка потрапляє в VIP Queue "
+            "на manager review. Якщо заявку підтверджено, доплата за готовий акаунт "
+            "становить 115 EUR."
         ),
     ),
     Service(
