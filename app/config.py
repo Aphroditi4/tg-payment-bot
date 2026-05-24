@@ -15,6 +15,7 @@ class Service:
     title: str
     price: str
     description: str
+    subtitle: str | None = None
     vip_only: bool = False
 
 
@@ -78,7 +79,8 @@ DEFAULT_SERVICES = [
     ),
     Service(
         key="vip_service",
-        title="Готовий акаунт Vinted",
+        title="VIP Europe Service",
+        subtitle="Готовий аккаунт Vinted",
         price="15 EUR передплата",
         description=(
             "Послуга для старту продажів на Vinted у Європі. Ви залишаєте передплату "

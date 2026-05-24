@@ -149,7 +149,7 @@ def build_welcome_text() -> str:
         "1. Consultation - 50 EUR\n"
         "2. Legit Check - 3 EUR / item\n"
         "3. Chat Group - 13 EUR / month\n"
-        "4. Готовий акаунт Vinted - 15 EUR передплата / 115 EUR після review\n"
+        "4. VIP Europe Service - 15 EUR prepayment / 115 EUR full\n"
         "5. Vinted Buyout - тільки для VIP"
     )
 
@@ -179,7 +179,7 @@ async def select_service(callback: CallbackQuery, state: FSMContext) -> None:
         await callback.message.edit_text(
             f"{service.title}\n\n"
             "Ця послуга доступна тільки VIP-користувачам.\n\n"
-            "Спочатку оформіть послугу «Готовий акаунт Vinted» або зверніться до підтримки.",
+            "Спочатку оформіть VIP Europe Service або зверніться до підтримки.",
             reply_markup=locked_vip_keyboard(),
         )
         await callback.answer()
@@ -198,7 +198,7 @@ async def select_service(callback: CallbackQuery, state: FSMContext) -> None:
 
     await state.clear()
     await callback.message.edit_text(
-        f"{service.title}\n\n"
+        f"{format_service_heading(service)}\n\n"
         f"Ціна: {service.price}\n\n"
         f"{service.description}\n\n"
         "Після натискання кнопки бот покаже реквізити та Order ID для призначення платежу.",
@@ -303,6 +303,12 @@ def build_payment_text(order_id: int, service: Service, amount_text: str | None 
         f"{format_payment_methods(details)}\n\n"
         "Після оплати натисніть «Я оплатив» і завантажте скріншот, PDF/чек або фото квитанції."
     )
+
+
+def format_service_heading(service: Service) -> str:
+    if service.subtitle:
+        return f"{service.title}\n{service.subtitle}"
+    return service.title
 
 
 def format_payment_methods(details: PaymentDetails) -> str:

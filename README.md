@@ -22,7 +22,7 @@ Aiogram MVP for manual payments by requisites, payment-proof upload, Telegram ad
 - Consultation - 50 EUR: after confirm, user fills a questionnaire and the request goes to CRM.
 - Legit Check - 3 EUR / item: after confirm, user uploads item photos and the request goes to moderator queue.
 - Chat Group - 13 EUR / month: after confirm, bot creates a private invite link and tracks a 30-day subscription.
-- Готовий акаунт Vinted - 15 EUR prepayment / 115 EUR after manager review: after confirm, user fills a VIP questionnaire and goes to VIP Queue.
+- VIP Europe Service / Готовий аккаунт Vinted - 15 EUR prepayment / 115 EUR after manager review: after confirm, user fills a VIP questionnaire and goes to VIP Queue.
 - Vinted Buyout - VIP only: user must be VIP, submits item link/price/comment, pays, then order moves to Processing after confirm.
 
 ## Admin Access
