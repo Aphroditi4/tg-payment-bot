@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -103,6 +104,19 @@ def admin_chat_ids() -> list[int]:
     if config.admin_review_chat_id:
         return [config.admin_review_chat_id]
     return sorted(config.admin_ids)
+
+
+def normalize_telegram_username(raw: str) -> str | None:
+    username = raw.strip()
+    if username.casefold() in {"-", "немає", "нема", "нет", "no", "none"}:
+        return "-"
+
+    username = re.sub(r"^(https?://)?(t\.me|telegram\.me)/", "", username, flags=re.IGNORECASE)
+    username = username.split("/", maxsplit=1)[0].split("?", maxsplit=1)[0]
+    username = username.removeprefix("@").strip()
+    if re.fullmatch(r"[A-Za-z0-9_]{5,32}", username):
+        return username
+    return None
 
 
 @router.message(CommandStart())
@@ -414,7 +428,13 @@ async def receive_payment_username(message: Message, state: FSMContext) -> None:
         await message.answer("Вкажіть Telegram username текстом.")
         return
     data = await state.get_data()
-    username = message.text.strip()
+    username = normalize_telegram_username(message.text)
+    if username is None:
+        await message.answer(
+            "Надішліть username у форматі @username або username.\n"
+            "Якщо username немає, напишіть «немає»."
+        )
+        return
     db.update_order_contact(int(data["order_id"]), customer_username=username)
     await state.set_state(PaymentFlow.waiting_for_phone)
     await message.answer("Надішліть телефон кнопкою нижче або введіть номер текстом.", reply_markup=phone_keyboard())
