@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 # Hardcoded Telegram user IDs that can use the admin panel.
 # Replace/add IDs here when a new admin must be allowed.
-HARDCODED_ADMIN_IDS = {1363148895}
+HARDCODED_ADMIN_IDS = {1363148895, 363161985, 5768681665}
 
 
 @dataclass(frozen=True)
@@ -21,18 +21,20 @@ class Service:
 
 @dataclass(frozen=True)
 class PaymentDetails:
-    recipient_name: str
-    iban: str
-    card: str
-    monobank: str
-    privat: str
-    wise: str
-    revolut: str
-    sepa_iban: str
+    recipients: str
+    lev_name: str
+    lev_iban: str
+    lev_monobank: str
+    stelmakh_name: str
+    stelmakh_iban: str
+    stelmakh_card: str
+    revolut_iban: str
+    revolut_tag: str
+    wise_tag: str
+    wise_iban: str
     usdt_trc20: str
-    usdc_trc20: str
-    btc: str
-    eth: str
+    usdc_erc20: str
+    binance_id: str
 
 
 @dataclass(frozen=True)
@@ -123,20 +125,48 @@ def _env(name: str, default: str = "") -> str:
     return os.getenv(name, default).strip()
 
 
+PAYMENT_PLACEHOLDERS = {
+    "VCommunity",
+    "UA00 0000 0000 0000 0000 0000 000",
+    "0000 0000 0000 0000",
+    "Monobank: 0000 0000 0000 0000",
+    "PrivatBank: 0000 0000 0000 0000",
+    "Wise: example@vcommunity.com",
+    "Revolut: @vcommunity",
+    "SEPA IBAN: XXXX XXXX XXXX",
+    "USDT TRC20: TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "USDC TRC20: TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "BTC: bc1xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "ETH: 0x0000000000000000000000000000000000000000",
+}
+
+
+def _payment_env(name: str, default: str) -> str:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    value = value.strip()
+    if not value or value in PAYMENT_PLACEHOLDERS:
+        return default
+    return value
+
+
 def _load_payment_details() -> PaymentDetails:
     return PaymentDetails(
-        recipient_name=_env("PAYMENT_RECIPIENT_NAME", "VCommunity"),
-        iban=_env("PAYMENT_IBAN", "UA00 0000 0000 0000 0000 0000 000"),
-        card=_env("PAYMENT_CARD", "0000 0000 0000 0000"),
-        monobank=_env("PAYMENT_MONOBANK", "Monobank: 0000 0000 0000 0000"),
-        privat=_env("PAYMENT_PRIVAT", "PrivatBank: 0000 0000 0000 0000"),
-        wise=_env("PAYMENT_WISE", "Wise: example@vcommunity.com"),
-        revolut=_env("PAYMENT_REVOLUT", "Revolut: @vcommunity"),
-        sepa_iban=_env("PAYMENT_SEPA_IBAN", "SEPA IBAN: XXXX XXXX XXXX"),
-        usdt_trc20=_env("PAYMENT_USDT_TRC20", "USDT TRC20: TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-        usdc_trc20=_env("PAYMENT_USDC_TRC20", "USDC TRC20: TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-        btc=_env("PAYMENT_BTC", "BTC: bc1xxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
-        eth=_env("PAYMENT_ETH", "ETH: 0x0000000000000000000000000000000000000000"),
+        recipients=_payment_env("PAYMENT_RECIPIENTS", "Lev Korunov / Stelmakh Maksym"),
+        lev_name=_payment_env("PAYMENT_LEV_NAME", "Lev Korunov"),
+        lev_iban=_payment_env("PAYMENT_LEV_IBAN", "UA113220010000026200318219054"),
+        lev_monobank=_payment_env("PAYMENT_LEV_MONOBANK", "4441111025358593"),
+        stelmakh_name=_payment_env("PAYMENT_STELMAKH_NAME", "Stelmakh Maksym"),
+        stelmakh_iban=_payment_env("PAYMENT_STELMAKH_IBAN", "UA313052990000026205696398065"),
+        stelmakh_card=_payment_env("PAYMENT_STELMAKH_CARD", "5457082256824330"),
+        revolut_iban=_payment_env("PAYMENT_REVOLUT_IBAN", "LT143250010412806160"),
+        revolut_tag=_payment_env("PAYMENT_REVOLUT_TAG", "@maksymstelmakh"),
+        wise_tag=_payment_env("PAYMENT_WISE_TAG", "@stelmahmaksims"),
+        wise_iban=_payment_env("PAYMENT_WISE_IBAN", "BE84967315589159"),
+        usdt_trc20=_payment_env("PAYMENT_USDT_TRC20", "TB3VtywkDdBtcAuJnSA8FVxk6suA78iiKb"),
+        usdc_erc20=_payment_env("PAYMENT_USDC_ERC20", "0x3af7ecbd55ed45c8b6704cd65f63f80c633f65cd"),
+        binance_id=_payment_env("PAYMENT_BINANCE_ID", "424934326"),
     )
 
 

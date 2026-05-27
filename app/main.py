@@ -1,4 +1,5 @@
 import asyncio
+import html
 import logging
 import re
 from datetime import datetime, timedelta, timezone
@@ -242,6 +243,7 @@ async def show_payment(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.message.edit_text(
         build_payment_text(order_id, service),
         reply_markup=payment_keyboard(order_id, service.key),
+        parse_mode="HTML",
     )
     await callback.answer()
 
@@ -302,7 +304,12 @@ async def vinted_comment(message: Message, state: FSMContext) -> None:
     await message.answer(
         build_payment_text(order_id, service, amount_text=amount_text),
         reply_markup=payment_keyboard(order_id, service.key),
+        parse_mode="HTML",
     )
+
+
+def html_code(value: str) -> str:
+    return f"<code>{html.escape(value)}</code>"
 
 
 def build_payment_text(order_id: int, service: Service, amount_text: str | None = None) -> str:
@@ -311,9 +318,9 @@ def build_payment_text(order_id: int, service: Service, amount_text: str | None 
     return (
         "💳 Оплата послуг VCommunity\n\n"
         "Реквізити для оплати:\n"
-        f"Отримувач: {details.recipient_name}\n"
-        f"Сума: {amount_text or service.price}\n"
-        f"Order ID / призначення платежу: {purpose}\n\n"
+        f"Отримувачі: {html.escape(details.recipients)}\n"
+        f"Сума: {html_code(amount_text or service.price)}\n"
+        f"Order ID / призначення платежу: {html_code(purpose)}\n\n"
         f"{format_payment_methods(details)}\n\n"
         "Після оплати натисніть «Я оплатив» і завантажте скріншот, PDF/чек або фото квитанції."
     )
@@ -327,19 +334,23 @@ def format_service_heading(service: Service) -> str:
 
 def format_payment_methods(details: PaymentDetails) -> str:
     return (
-        "Card / IBAN:\n"
-        f"- IBAN: {details.iban}\n"
-        f"- Card: {details.card}\n"
-        f"- Monobank: {details.monobank}\n"
-        f"- Privat: {details.privat}\n"
-        f"- Wise: {details.wise}\n"
-        f"- Revolut: {details.revolut}\n"
-        f"- SEPA / IBAN: {details.sepa_iban}\n\n"
-        "Crypto:\n"
-        f"- USDT TRC20: {details.usdt_trc20}\n"
-        f"- USDC TRC20: {details.usdc_trc20}\n"
-        f"- BTC: {details.btc}\n"
-        f"- ETH: {details.eth}"
+        "<b>UAH / EUR cards</b>\n"
+        f"{html.escape(details.lev_name)}\n"
+        f"- IBAN: {html_code(details.lev_iban)}\n"
+        f"- Monobank: {html_code(details.lev_monobank)}\n\n"
+        f"{html.escape(details.stelmakh_name)}\n"
+        f"- IBAN: {html_code(details.stelmakh_iban)}\n"
+        f"- Card: {html_code(details.stelmakh_card)}\n\n"
+        "<b>Revolut EUR</b>\n"
+        f"- IBAN: {html_code(details.revolut_iban)}\n"
+        f"- Tag: {html_code(details.revolut_tag)}\n\n"
+        "<b>Wise EUR</b>\n"
+        f"- Wise tag: {html_code(details.wise_tag)}\n"
+        f"- IBAN: {html_code(details.wise_iban)}\n\n"
+        "<b>Binance</b>\n"
+        f"- USDT TRC20: {html_code(details.usdt_trc20)}\n"
+        f"- USDC ERC20: {html_code(details.usdc_erc20)}\n"
+        f"- Binance ID: {html_code(details.binance_id)}"
     )
 
 
